@@ -1,0 +1,33 @@
+Hive partition
+# cd Desktop/HandsOn_Hive
+hdfs dfs -mkdir /user/root/depts
+
+hdfs dfs -mkdir /user/root/depts/dept10
+hdfs dfs -mkdir /user/root/depts/dept20
+hdfs dfs -mkdir /user/root/depts/dept30
+
+hdfs dfs -put dept10.txt /user/root/depts/dept10
+hdfs dfs -put dept20.txt /user/root/depts/dept20
+hdfs dfs -put dept30.txt /user/root/depts/dept30
+ 
+beeline -u jdbc:hive2://elephant:10000/default -n root
+
+create external table deptsnew(empno int,ename string,job string,mgr int,hiredate string,salary int,comm int,deptno int)
+row format delimited
+fields terminated by '/'
+location '/user/root/depts';
+
+> select * from depts;
+(you must not see any rows displayed)
+
+create external table deptspart(empno int,ename string,job string,mgr int,hiredate string,salary int,comm int)
+partitioned by (deptno string)
+row format delimited
+fields terminated by '/'
+location '/user/root/depts';
+
+ALTER TABLE deptspart ADD PARTITION (deptno='dept10') LOCATION '/user/root/depts/dept10';
+ALTER TABLE deptspart ADD PARTITION (deptno='dept20') LOCATION '/user/root/depts/dept20';
+ALTER TABLE deptspart ADD PARTITION (deptno='dept30') LOCATION '/user/root/depts/dept30';
+
+

@@ -1,0 +1,74 @@
+BUCKETING IN HIVE
+IT CAN DIVIDE THE DATA INTO GROUPS BASED ON THE CLUSTERING COLUMN AS BUCKETS.
+BUCKET CAN BE USED WHERE PARTITIONING IS NOT POSSIBLE.
+
+EMPNO
+
+SELECT * FROM EMPLOYEES WHERE EMPNO IS BETWEEN 1 TO 100; --RANGE SEARCH
+
+THE CONCEPT IF BUCKETING IS BASED ON THE HASHING TECHNIQUES.
+
+BUCKETS ARE SUB DIRECTORIES CREATED BY HIVE, AND STORE THE RANGE OF THE DATA INTO RESPECTIVE SUB DIRECTORIES.
+
+
+EXAMPLE
+
+1. FIRST WE WILL CREATE A NORMAL TABLE AND THEN A BUCKETING TABLE AND TRANSFER THE NORMAL TABLE DATA INTO BUCKETING TABLE.
+
+hive> create table emp(empno int,ename string,job string,mgr int,hiredate string,salary int,comm int,deptno int)
+row format delimited
+fields terminated by '/';
+
+From Linux terminal
+[root@saispark ~]# cd Desktop/
+[root@saispark Desktop]# hdfs dfs -put emp.txt /user/hive/warehouse/emp/
+
+
+hive> set hive.enforce.bucketing=true;
+
+
+2. CREATING THE BUCKET TABLE
+
+hive> create table emp_buckets(empno int,ename string,job string,mgr int,hiredate string,salary int,comm int,deptno int)
+clustered by(empno) into 2 buckets
+row format delimited
+fields terminated by '/';
+
+hive> insert overwrite table emp_buckets select * from emp;
+
+$ hdfs dfs -ls /user/hive/warehouse/emp_buckets;
+
+$ hdfs dfs -cat /user/hive/warehouse/emp_buckets/000000_0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
